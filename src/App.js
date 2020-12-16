@@ -1,55 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import Message from './components/Message.js';
-import { socket } from './services/socket.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Navbar from './components/Navbar.js';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from 'react-router-dom';
+import Home from './views/Home/Home.js';
+import About from './views/About/About.js';
+import Join from './views/Join/Join.js';
+import HowTo from './views/HowTo/HowTo.js';
+import Host from './views/Host/Host.js';
+import PlayerView from './views/PlayerView/PlayerView.js';
+import HostView from './views/HostView/HostView.js';
 
 const App = () => {
-    const [msg, setMsg] = useState('');
-    const [messages, setMessages] =  useState([]);
-    const [room, setRoom] = useState('');
-    const [newRoom, setNewRoom] = useState('');
-
-    useEffect(() => {
-        socket.on('chat message', msg => {
-            setMessages(messages => [...messages, msg]);
-        });
-
-        socket.on('room status', status => {
-            setRoom(status);
-        })
-    }, []);
-
-    const sendMessage = msg => {
-        socket.emit('chat message', {
-            'room': room,
-            'message': msg,
-        });
-    };
-
-    const joinRoom = () => {
-        socket.emit('handshake', newRoom);
-        setNewRoom('');
-    };
-
     return (
-        <>
-            <h1>Chat room example</h1>
-            <input type="text" value={newRoom} onChange={event => {
-                setNewRoom(event.target.value);
-            }}></input>
-            <button onClick={() => {
-                joinRoom();
-            }}>Join</button>
-            <label>{room === '' ? 'Join a room' : room}</label>
-            <br />
-            <input type="text" value={msg} onChange={event => {
-                setMsg(event.target.value);
-            }}></input>
-            <button onClick={() => {
-                sendMessage(msg);
-                setMsg('');
-            }}>Send</button>
-            <ul>{messages.map((message, i) => <Message key={i} msg={message} />)}</ul>
-        </>
+        <Router>
+            <div>
+                <Navbar />
+            </div>
+            <Switch>
+                <Route path="/hostview" component={HostView} />
+                <Route path="/playerview" component={PlayerView} />
+                <Route path="/about" component={About} />
+                <Route path="/join" component={Join} />
+                <Route path="/howto" component={HowTo} />
+                <Route path="/host" component={Host} />
+                <Route path="/" component={Home} />
+            </Switch>
+        </Router>
     );
 };
 
